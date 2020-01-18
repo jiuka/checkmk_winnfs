@@ -21,7 +21,7 @@
 
 
 factory_settings['winnfsshare_default_levels'] = {
-    'Online': True,
+    'Online': 'True',
 }
 
 def parse_winnfsshare(info):
@@ -54,11 +54,11 @@ def check_winnfsshare(item, params, parsed):
     parsed = parsed[item]
 
     if params['Online'] == 'ignored':
-        yield 0, parsed['Online']
+        yield 0, 'Online' if parsed['Online'] == 'True' else 'Offline'
     elif params['Online'] == parsed['Online']:
-        yield 0, parsed['Online']
+        yield 0, 'Online' if parsed['Online'] == 'True' else 'Offline'
     else:
-        yield 2, "%s (expected: %s)" % (parsed['Online'], params['Online'])
+        yield 2, "%s (expected: %s)" % ('Online' if parsed['Online'] == 'True' else 'Offline', 'Online' if params['Online'] == 'True' else 'Offline')
 
     if 'Authentication' in params:
         yield 0, "Authentication:",
