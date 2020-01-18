@@ -1,0 +1,103 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# winnfssrv - Windows NFS Server check
+#
+# Copyright (C) 2020  Marius Rieder <marius.rieder@scs.ch>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+factory_settings['winnfssrv_default_levels'] = {
+    'State': 'Running',
+}
+
+def parse_winnfssrv(info):
+    parsed = {}
+
+    for line in info:
+        key, val = re.split(r'\s*:\s*', line[0])
+        parsed[key] = val
+        if val.isdigit():
+            parsed[key] = saveint(val)
+        elif val in ['Enabled', 'True']:
+            parsed[key] = True
+        elif val in ['Disabled', 'False']:
+            parsed[key] = False
+        elif val.startswith('{'):
+            parsed[key] = val[1:-1]
+
+    return parsed
+
+
+def inventory_winnfssrv(parsed):
+    if 'State' in parsed:
+        yield None, {}
+
+def check_winnfssrv(_item, params, parsed):
+    if params['State'] == 'ignored':
+        yield 0, parsed['State']
+    elif params['State'] == parsed['State']:
+        yield 0, parsed['State']
+    else:
+        yield 2, "%s (expected: %s)" % (parsed['State'], params['State'])
+
+    for version in range(2,5):
+        name = "EnableNFSV%d" % version
+
+        if params[name] == 'ignored':
+            if parsed[name]:
+                yield 0, "NFSv%d" % version
+        elif parsed[name] == params[name]:
+            if parsed[name]:
+                yield 0, "NFSv%d" % version
+            else:
+                yield 0, "No NFSv%d" % version
+        else:
+            if parsed[name]:
+                yield 1, "Not expected NFSv%d" % version
+            else:
+                yield 1, "Expected NFSv%d" % version
+
+    for protocol in [
+            'MountProtocol',
+            'NfsProtocol',
+            'NisProtocol',
+            'NlmProtocol',
+            'NsmProtocol',
+            'PortmapProtocol',
+            'MapServerProtocol']:
+        if protocol not in params:
+            continue
+        if parsed[protocol] == params[protocol]:
+            yield 0, "%s: %s" % (protocol, parsed[protocol])
+        else:
+            yield 1, "%s: %s (expected: %s)" % (protocol, parsed[protocol], params[protocol])
+
+    perfdata = [
+        ('winnfssrv_session', parsed['Sessions']),
+        ('winnfssrv_client', parsed['Clients']),
+    ]
+    yield 0, None, perfdata
+
+check_info['winnfssrv'] = {
+  'parse_function'         : parse_winnfssrv,
+  'inventory_function'     : inventory_winnfssrv,
+  'check_function'         : check_winnfssrv,
+  'service_description'    : 'NFS Server',
+  'has_perfdata'           : True,
+  'group'                  : 'winnfssrv',
+  'default_levels_variable': 'winnfssrv_default_levels',
+}
