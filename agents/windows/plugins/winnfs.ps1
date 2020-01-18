@@ -1,4 +1,4 @@
-Write-Host '<<<winnfsserverconfiguration:sep(0)>>>'
+Write-Host '<<<winnfssrv:sep(0)>>>'
 try {
     $cfg = Get-NfsServerConfiguration
     $cfg | Format-List
