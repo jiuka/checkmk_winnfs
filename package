@@ -17,7 +17,7 @@
           'plugins/metrics/winnfssrv.py',
           'plugins/perfometer/winnfssrv.py',
           'plugins/wato/check_parameters_winnfsshare.py',
-          'plugins/wato/check_parameters_winnfssrv.py,
+          'plugins/wato/check_parameters_winnfssrv.py',
         ]},
     'name': 'winnfs',
     'title': u'Check for the Windows NFS Server',
