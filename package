@@ -7,7 +7,7 @@
           'bakery/winnfs',
           'windows/plugins/winnfs.ps1',
         ],
-        'checkman': [],
+        'checkman': ['winnfsshare', 'winnfssrv'],
         'checks': ['winnfsshare', 'winnfssrv'],
         'doc': [],
         'inventory': [],

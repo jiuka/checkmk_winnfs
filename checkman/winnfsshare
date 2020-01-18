@@ -1,0 +1,16 @@
+title: Check Windows NFS Share status
+agents: windows
+catalog: os/storage
+distribution:
+author: Marius Rieder <marius.rieder@scs.ch>
+license: GPL
+description:
+ This check monitors the status and config of the Windows NFS Share.
+
+ The check can be configured via the corresponding WATO rule {Windows NFS Share}
+
+item:
+ The share name.
+
+inventory:
+ One check per share is created for the shares reported in the agent section {<<<winnfsshare>>>}.
