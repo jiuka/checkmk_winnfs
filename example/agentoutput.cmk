@@ -1,0 +1,55 @@
+#! /usr/bin/cat
+<<<check_mk>>>
+Version: 1.6.0p6
+BuildDate: Nov 11 2019
+AgentOS: windows
+Hostname: contoso-fs
+Architecture: 64bit
+WorkingDirectory: C:\Windows\system32
+ConfigFile: C:\Program Files (x86)\checkmk\service\check_mk.yml
+LocalConfigFile: C:\ProgramData\checkmk\agent\check_mk.user.yml
+AgentDirectory: C:\Program Files (x86)\checkmk\service
+PluginsDirectory: C:\ProgramData\checkmk\agent\plugins
+StateDirectory: C:\ProgramData\checkmk\agent\state
+ConfigDirectory: C:\ProgramData\checkmk\agent\config
+TempDirectory: C:\ProgramData\checkmk\agent\tmp
+LogDirectory: C:\ProgramData\checkmk\agent\log
+SpoolDirectory: C:\ProgramData\checkmk\agent\spool
+LocalDirectory: C:\ProgramData\checkmk\agent\local
+<<<winnfssrv:sep(0)>>>
+
+
+State                            : Running
+LogActivity                      : 
+CharacterTranslationFile         : Not Configured
+DirectoryCacheSize (KB)          : 128
+HideFilesBeginningInDot          : Enabled
+EnableNFSV2                      : False
+EnableNFSV3                      : False
+EnableNFSV4                      : True
+EnableAuthenticationRenewal      : True
+AuthenticationRenewalIntervalSec : 600
+NlmGracePeriodSec                : 45
+MountProtocol                    : {TCP, UDP}
+NfsProtocol                      : {TCP, UDP}
+NisProtocol                      : {TCP, UDP}
+NlmProtocol                      : {UDP}
+NsmProtocol                      : {TCP}
+PortmapProtocol                  : {TCP, UDP}
+MapServerProtocol                : {TCP, UDP}
+PreserveInheritance              : False
+NetgroupCacheTimeoutSec          : 30
+UnmappedUserAccount              : 
+WorldAccount                     : Everyone
+AlwaysOpenByName                 : False
+GracePeriodSec                   : 240
+LeasePeriodSec                   : 120
+OnlineTimeoutSec                 : 180
+
+
+Clients : 1
+Sessions : 1
+<<<winnfsshare:sep(124)>>>
+Name|Online|Clustered|Authentication|AnonymousAccess|UnmappedUserAccess
+homes|True|False|Krb5p|False|False
+homes2|True|False|sys,Krb5,Krb5i,Krb5p|False|False
