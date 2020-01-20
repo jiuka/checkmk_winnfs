@@ -22,6 +22,9 @@
 
 factory_settings['winnfssrv_default_levels'] = {
     'State': 'Running',
+    'EnableNFSV2': 'ignored',
+    'EnableNFSV3': 'ignored',
+    'EnableNFSV4': 'ignored',
 }
 
 def parse_winnfssrv(info):
