@@ -3,27 +3,26 @@
     'description': u'This package contains a check plugin for Windows NFS',
     'download_url': 'https://github.com/jiuka/checkmk_winnfs/releases',
     'files': {
+        'agent_based': ['winnfsshare.py', 'winnfssrv.py'],
         'agents': [
           'bakery/winnfs',
           'windows/plugins/winnfs.ps1',
         ],
         'checkman': ['winnfsshare', 'winnfssrv'],
-        'checks': ['winnfsshare', 'winnfssrv'],
+        'checks': [],
         'doc': [],
         'inventory': [],
         'notifications': [],
         'pnp-templates': [],
         'web': [
           'plugins/metrics/winnfssrv.py',
-          'plugins/perfometer/winnfssrv.py',
           'plugins/wato/agent_bakery_winnfs.py',
           'plugins/wato/check_parameters_winnfsshare.py',
           'plugins/wato/check_parameters_winnfssrv.py',
         ]},
     'name': 'winnfs',
     'title': u'Check for the Windows NFS Server',
-    'version': '0.3',
-    'version.min_required': '1.6.0',
-    'version.packaged': '1.6.0p20',
-    'version.usable_until': '1.7.0'
+    'version': '1.0b1',
+    'version.min_required': '2.0.0b5',
+    'version.packaged': '2.0.0',
 }
