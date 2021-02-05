@@ -22,7 +22,7 @@
         ]},
     'name': 'winnfs',
     'title': u'Check for the Windows NFS Server',
-    'version': '0.3',
+    'version': '0.4',
     'version.min_required': '1.6.0',
     'version.packaged': '1.6.0p20',
     'version.usable_until': '1.7.0'

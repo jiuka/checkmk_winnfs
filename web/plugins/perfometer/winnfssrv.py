@@ -7,7 +7,8 @@ def perfometer_winnfssrv(row, check_command, perf_data):
     for i, color, base, scale, verbfunc in [
         (0, "#00FFB2", 10000, 10, lambda v: ("Clients: %d") % v),
         (1, "#00FFFF", 10000, 10, lambda v: ("Sessions: %d") % v),
-    ]:        val = float(perf_data[i][1])
+    ]:
+        val = float(perf_data[i][1])
         h += perfometer_logarithmic(val, base, scale, color)
         texts.append(verbfunc(val))
     h += '</div>'
