@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
 #
 # winnfssrv - Windows NFS Server check
@@ -48,6 +48,9 @@
 # GracePeriodSec                   : 240
 # LeasePeriodSec                   : 120
 # OnlineTimeoutSec                 : 180
+#
+# Clients : 0
+# Sessions : 0
 
 import re
 from typing import Any, Dict, Mapping, Optional

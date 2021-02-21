@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
 #
 # winnfsshare - Windows NFS Share check
 #
-# Copyright (C) 2020  Marius Rieder <marius.rieder@scs.ch>
+# Copyright (C) 2020-2021  Marius Rieder <marius.rieder@scs.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -70,7 +70,6 @@ def discover_winnfsshare(section: Optional[Dict[str, Dict[str, Any]]]) -> type_d
 
 def check_winnfsshare(item: str, params: Mapping, section: Optional[Dict[str, Dict[str, Any]]]) -> type_defs.CheckResult:
     if item not in section:
-        yield Result(state=State.UNKNOWN, summary='Share not found')
         return
 
     current = section[item]
@@ -98,7 +97,7 @@ def check_winnfsshare(item: str, params: Mapping, section: Optional[Dict[str, Di
                 if methode in current['Authentication'] and methode in params['discovered']['Authentication']:
                     yield Result(state=State.OK, summary=methode)
                 elif methode in current['Authentication']:
-                    yield Result(state=State.WARN, summary='Not epected %s' % methode)
+                    yield Result(state=State.WARN, summary='Not expected %s' % methode)
                 else:
                     yield Result(state=State.WARN, summary='Expected %s' % methode)
 
