@@ -1,8 +1,9 @@
+#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
 #
-# Windows NFS checks
+# Windows NFS check
 #
-# Copyright (C) 2020  Marius Rieder <marius.rieder@scs.ch>
+# Copyright (C) 2020-2021  Marius Rieder <marius.rieder@scs.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,113 +31,73 @@ from cmk.gui.plugins.wato import (
 )
 
 
+def ProtocolState(**kwargs):
+    return DropdownChoice(choices=[
+        ('TCP, UDP', _('TCP and UDP')),
+        ('TCP', _('TCP only')),
+        ('UDP', _('UDP only')),
+    ], **kwargs)
+
+
 def _parameter_valuespec_winnfssrv():
     return Dictionary(
         help=_('Ensure the Windows Server for NFS is in the desired state.'),
         elements=[
-            ('State',
-             DropdownChoice(
-                 title=_('Server State'),
-                 choices=[
-                     ('Running', _('Running')),
-                     ('Stopped', _('Stopped')),
-                     ('ignored', _('Is ignored')),
-                 ],
-                 default_value='Running',
-             )),
-            ('EnableNFSV2',
-             DropdownChoice(
-                 title=_('NFSv2'),
-                 choices=[
-                     (True, _('Needs to be enabled')),
-                     (False, _('Needs to be disabled')),
-                     ('ignored', _('Is ignored')),
-                 ],
-                 default_value=True,
-             )),
-            ('EnableNFSV3',
-             DropdownChoice(
-                 title=_('NFSv3'),
-                 choices=[
-                     (True, _('Needs to be enabled')),
-                     (False, _('Needs to be disabled')),
-                     ('ignored', _('Is ignored')),
-                 ],
-                 default_value=True,
-             )),
-            ('EnableNFSV4',
-             DropdownChoice(
-                 title=_('NFSv4'),
-                 choices=[
-                     (True, _('Needs to be enabled')),
-                     (False, _('Needs to be disabled')),
-                     ('ignored', _('Is ignored')),
-                 ],
-                 default_value=True,
-             )),
-            ('MountProtocol',
-             DropdownChoice(
-                 title=_('Mount Protocol'),
-                 choices=[
-                     ('TCP, UDP', _('TCP and UDP')),
-                     ('TCP', _('TCP only')),
-                     ('UDP', _('UDP only')),
-                 ],
-             )),
-            ('NfsProtocol',
-             DropdownChoice(
-                 title=_('Nfs Protocol'),
-                 choices=[
-                     ('TCP, UDP', _('TCP and UDP')),
-                     ('TCP', _('TCP only')),
-                     ('UDP', _('UDP only')),
-                 ],
-             )),
-            ('NisProtocol',
-             DropdownChoice(
-                 title=_('Nis Protocol'),
-                 choices=[
-                     ('TCP, UDP', _('TCP and UDP')),
-                     ('TCP', _('TCP only')),
-                     ('UDP', _('UDP only')),
-                 ],
-             )),
-            ('NlmProtocol',
-             DropdownChoice(
-                 title=_('Nlm Protocol'),
-                 choices=[
-                     ('TCP, UDP', _('TCP and UDP')),
-                     ('TCP', _('TCP only')),
-                     ('UDP', _('UDP only')),
-                 ],
-             )),
-            ('NsmProtocol',
-             DropdownChoice(
-                 title=_('Nsm Protocol'),
-                 choices=[
-                     ('TCP, UDP', _('TCP and UDP')),
-                     ('TCP', _('TCP only')),
-                     ('UDP', _('UDP only')),
-                 ],
-             )),
-            ('PortmapProtocol',
-             DropdownChoice(
-                 title=_('Portmap Protocol'),
-                 choices=[
-                     ('TCP, UDP', _('TCP and UDP')),
-                     ('TCP', _('TCP only')),
-                     ('UDP', _('UDP only')),
-                 ],
-             )),
-            ('MapServerProtocol',
-             DropdownChoice(
-                 title=_('MapServer Protocol'),
-                 choices=[
-                     ('TCP, UDP', _('TCP and UDP')),
-                     ('TCP', _('TCP only')),
-                     ('UDP', _('UDP only')),
-                 ],
-             )),
+            (
+                'State',
+                DropdownChoice(
+                    title=_('Server State'),
+                    choices=[
+                        ('Running', _('Running')),
+                        ('Stopped', _('Stopped')),
+                        ('ignored', _('Is ignored')),
+                    ],
+                    default_value='Running',
+                )
+            ),
+            (
+                'EnableNFSV2',
+                DropdownChoice(
+                    title=_('NFSv2'),
+                    choices=[
+                        (True, _('Needs to be enabled')),
+                        (False, _('Needs to be disabled')),
+                        ('ignored', _('Is ignored')),
+                    ],
+                    default_value=True,
+                )
+            ),
+            (
+                'EnableNFSV3',
+                DropdownChoice(
+                    title=_('NFSv3'),
+                    choices=[
+                        (True, _('Needs to be enabled')),
+                        (False, _('Needs to be disabled')),
+                        ('ignored', _('Is ignored')),
+                    ],
+                    default_value=True,
+                )
+            ),
+            (
+                'EnableNFSV4',
+                DropdownChoice(
+                    title=_('NFSv4'),
+                    choices=[
+                        (True, _('Needs to be enabled')),
+                        (False, _('Needs to be disabled')),
+                        ('ignored', _('Is ignored')),
+                    ],
+                    default_value=True,
+                )
+            ),
+            ('MountProtocol', ProtocolState(title=_('Mount Protocol'))),
+            ('NfsProtocol', ProtocolState(title=_('Nfs Protocol'))),
+            ('NisProtocol', ProtocolState(title=_('Nis Protocol'))),
+            ('NlmProtocol', ProtocolState(title=_('Nlm Protocol'))),
+            ('NsmProtocol', ProtocolState(title=_('Nsm Protocol'))),
+            ('PortmapProtocol', ProtocolState(title=_('Portmap Protocol'))),
+            ('MapServerProtocol', ProtocolState(title=_('MapServer Protocol'))),
         ],
     )
 

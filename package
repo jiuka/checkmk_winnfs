@@ -5,7 +5,7 @@
     'files': {
         'agent_based': ['winnfsshare.py', 'winnfssrv.py'],
         'agents': [
-          'bakery/winnfs',
+          'bakery/winnfs.py',
           'windows/plugins/winnfs.ps1',
         ],
         'checkman': ['winnfsshare', 'winnfssrv'],
@@ -22,7 +22,8 @@
         ]},
     'name': 'winnfs',
     'title': u'Check for the Windows NFS Server',
-    'version': '1.0b1',
+    'version': '1.0',
     'version.min_required': '2.0.0b5',
     'version.packaged': '2.0.0',
+    'version.usable_until': '2.1.0'
 }

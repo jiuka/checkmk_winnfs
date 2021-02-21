@@ -1,8 +1,9 @@
+#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
 #
-# Windows NFS checks
+# Windows NFS check
 #
-# Copyright (C) 2020  Marius Rieder <marius.rieder@scs.ch>
+# Copyright (C) 2020-2021  Marius Rieder <marius.rieder@scs.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
