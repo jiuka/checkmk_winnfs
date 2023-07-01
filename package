@@ -5,15 +5,12 @@
     'files': {
         'agent_based': ['winnfsshare.py', 'winnfssrv.py'],
         'agents': [
-            'bakery/winnfs.py',
             'windows/plugins/winnfs.ps1',
         ],
         'checkman': ['winnfsshare', 'winnfssrv'],
-        'checks': [],
-        'doc': [],
-        'inventory': [],
-        'notifications': [],
-        'pnp-templates': [],
+        'lib': [
+            'python3/cmk/base/cee/plugins/bakery/winnfs.py',
+        ],
         'web': [
             'plugins/metrics/winnfssrv.py',
             'plugins/wato/agent_bakery_winnfs.py',
@@ -22,8 +19,8 @@
         ]},
     'name': 'winnfs',
     'title': u'Check for the Windows NFS Server',
-    'version': '1.1.1',
-    'version.min_required': '2.0.0',
+    'version': '1.1.2',
+    'version.min_required': '2.2.0',
     'version.packaged': '2.2.0',
     'version.usable_until': '2.3.0'
 }
