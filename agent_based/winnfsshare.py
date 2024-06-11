@@ -3,7 +3,7 @@
 #
 # winnfsshare - Windows NFS Share check
 #
-# Copyright (C) 2020-2021  Marius Rieder <marius.rieder@scs.ch>
+# Copyright (C) 2020-2024  Marius Rieder <marius.rieder@scs.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,16 +24,19 @@
 # homes|True|False|Krb5p|False|False
 
 from typing import Any, Dict, Mapping, Optional
-from .agent_based_api.v1 import (
-    register,
-    type_defs,
+from cmk.agent_based.v2 import (
+    CheckPlugin,
+    AgentSection,
+    StringTable,
     Service,
     Result,
+    CheckResult,
+    DiscoveryResult,
     State,
 )
 
 
-def parse_winnfsshare(string_table: type_defs.StringTable) -> Optional[Dict[str, Dict[str, Any]]]:
+def parse_winnfsshare(string_table: StringTable) -> Optional[Dict[str, Dict[str, Any]]]:
     parsed: Dict[str, Dict[str, Any]] = {}
 
     keys = string_table.pop(0)[1:]
@@ -47,7 +50,7 @@ def parse_winnfsshare(string_table: type_defs.StringTable) -> Optional[Dict[str,
     return parsed
 
 
-register.agent_section(
+agent_section_winnfsshare = AgentSection(
     name='winnfsshare',
     parse_function=parse_winnfsshare,
 )
@@ -58,7 +61,7 @@ WINNFSSHARE_CHECK_DEFAULT_PARAMETERS = {
 }
 
 
-def discover_winnfsshare(section: Optional[Dict[str, Dict[str, Any]]]) -> type_defs.DiscoveryResult:
+def discover_winnfsshare(section: Optional[Dict[str, Dict[str, Any]]]) -> DiscoveryResult:
     for key, value in section.items():
         params = {'discovered': {
             'Authentication': value['Authentication'],
@@ -68,7 +71,7 @@ def discover_winnfsshare(section: Optional[Dict[str, Dict[str, Any]]]) -> type_d
         yield Service(item=key, parameters=params)
 
 
-def check_winnfsshare(item: str, params: Mapping, section: Optional[Dict[str, Dict[str, Any]]]) -> type_defs.CheckResult:
+def check_winnfsshare(item: str, params: Mapping, section: Optional[Dict[str, Dict[str, Any]]]) -> CheckResult:
     if item not in section:
         return
 
@@ -102,14 +105,17 @@ def check_winnfsshare(item: str, params: Mapping, section: Optional[Dict[str, Di
                     yield Result(state=State.WARN, summary='Expected %s' % methode)
 
     if 'AnonymousAccess' in params:
-        if params['AnonymousAccess'] == 'ignored':
-            pass
-        if params['AnonymousAccess'] == 'discoverd':
-            params['AnonymousAccess'] = params['discovered']['AnonymousAccess']
+        match params['AnonymousAccess']:
+            case 'discoverd':
+                params['AnonymousAccess'] = params['discovered']['AnonymousAccess']
+            case 'allowed':
+                params['AnonymousAccess'] = 'True'
+            case 'forbidden':
+                params['AnonymousAccess'] = 'False'
+            case 'ignored':
+                params['AnonymousAccess'] = current['AnonymousAccess']
 
-        state = State.OK
-        if current['AnonymousAccess'] != params['AnonymousAccess']:
-            state = State.WARN
+        state = State.OK if params['AnonymousAccess'] == current['AnonymousAccess'] else State.WARN
 
         if current['AnonymousAccess'] == 'True':
             yield Result(state=state, summary='Anonymous Access allowed')
@@ -117,14 +123,17 @@ def check_winnfsshare(item: str, params: Mapping, section: Optional[Dict[str, Di
             yield Result(state=state, summary='Anonymous Access not allowed')
 
     if "UnmappedUserAccess" in params:
-        if params['UnmappedUserAccess'] == 'ignored':
-            pass
-        if params['UnmappedUserAccess'] == 'discoverd':
-            params['UnmappedUserAccess'] = params['discovered']['UnmappedUserAccess']
+        match params['UnmappedUserAccess']:
+            case 'discoverd':
+                params['UnmappedUserAccess'] = params['discovered']['UnmappedUserAccess']
+            case 'allowed':
+                params['UnmappedUserAccess'] = 'True'
+            case 'forbidden':
+                params['UnmappedUserAccess'] = 'False'
+            case 'ignored':
+                params['UnmappedUserAccess'] = current['UnmappedUserAccess']
 
-        state = State.OK
-        if current['UnmappedUserAccess'] != params['UnmappedUserAccess']:
-            state = State.WARN
+        state = State.OK if params['UnmappedUserAccess'] == current['UnmappedUserAccess'] else State.WARN
 
         if current['UnmappedUserAccess'] == 'True':
             yield Result(state=state, summary='Unmapped User Access allowed')
@@ -132,7 +141,7 @@ def check_winnfsshare(item: str, params: Mapping, section: Optional[Dict[str, Di
             yield Result(state=state, summary='Unmapped User not allowed')
 
 
-register.check_plugin(
+check_plugin_winnfsshare = CheckPlugin(
     name = 'winnfsshare',
     service_name = 'NFS Share /%s',
     discovery_function = discover_winnfsshare,

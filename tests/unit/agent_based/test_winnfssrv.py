@@ -20,13 +20,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import pytest
-from cmk.base.plugins.agent_based.agent_based_api.v1 import (
+from cmk.agent_based.v2 import (
     Metric,
     Result,
     Service,
     State,
 )
-from cmk.base.plugins.agent_based import winnfssrv
+from cmk_addons.plugins.winnfs.agent_based import winnfssrv
 
 EXAMPLE_STRING_TABLE = [
     ['State                            : Running'],
@@ -120,7 +120,7 @@ def test_discover_winnfssrv(section, result):
         ]
     ),
     (
-        {'EnableNFSV3': True},
+        {'EnableNFSV3': 'enabled'},
         [
             Result(state=State.OK, summary='Running'),
             Result(state=State.WARN, summary='Expected NFSv3'),
@@ -130,7 +130,7 @@ def test_discover_winnfssrv(section, result):
         ]
     ),
     (
-        {'EnableNFSV3': False},
+        {'EnableNFSV3': 'disabled'},
         [
             Result(state=State.OK, summary='Running'),
             Result(state=State.OK, summary='No NFSv3'),
@@ -144,6 +144,18 @@ def test_discover_winnfssrv(section, result):
         [
             Result(state=State.OK, summary='Running'),
             Result(state=State.OK, summary='NFSv4'),
+            Metric('winnfssrv_session', 2.0),
+            Metric('winnfssrv_client', 1.0)
+        ]
+    ),
+    (
+        {'MountProtocol': 'TCP', 'NfsProtocol': 'UDP', 'NisProtocol': 'TCPUDP'},
+        [
+            Result(state=State.OK, summary='Running'),
+            Result(state=State.OK, summary='NFSv4'),
+            Result(state=State.WARN, summary='MountProtocol: TCP, UDP (expected: TCP)'),
+            Result(state=State.WARN, summary='NfsProtocol: TCP, UDP (expected: UDP)'),
+            Result(state=State.OK, summary='NisProtocol: TCP, UDP'),
             Metric('winnfssrv_session', 2.0),
             Metric('winnfssrv_client', 1.0)
         ]

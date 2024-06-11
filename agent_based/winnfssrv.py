@@ -3,7 +3,7 @@
 #
 # winnfssrv - Windows NFS Server check
 #
-# Copyright (C) 2020  Marius Rieder <marius.rieder@scs.ch>
+# Copyright (C) 2020-2024  Marius Rieder <marius.rieder@scs.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -54,17 +54,20 @@
 
 import re
 from typing import Any, Dict, Mapping, Optional
-from .agent_based_api.v1 import (
-    register,
-    type_defs,
-    Service,
-    Result,
-    State,
+from cmk.agent_based.v2 import (
+    AgentSection,
+    CheckPlugin,
+    CheckResult,
+    DiscoveryResult,
     Metric,
+    Result,
+    Service,
+    State,
+    StringTable,
 )
 
 
-def parse_winnfssrv(string_table: type_defs.StringTable) -> Optional[Dict[str, Any]]:
+def parse_winnfssrv(string_table: StringTable) -> Optional[Dict[str, Any]]:
     parsed: Dict[str, Any] = {}
 
     for line in string_table:
@@ -82,7 +85,7 @@ def parse_winnfssrv(string_table: type_defs.StringTable) -> Optional[Dict[str, A
     return parsed
 
 
-register.agent_section(
+agent_section_winnfssrv = AgentSection(
     name='winnfssrv',
     parse_function=parse_winnfssrv,
 )
@@ -93,12 +96,12 @@ WINNFSSRV_CHECK_DEFAULT_PARAMETERS = {
 }
 
 
-def discover_winnfssrv(section: Optional[Dict[str, Dict[str, Any]]]) -> type_defs.DiscoveryResult:
+def discover_winnfssrv(section: Optional[Dict[str, Dict[str, Any]]]) -> DiscoveryResult:
     if 'State' in section:
         yield Service()
 
 
-def check_winnfssrv(params: Mapping, section: Optional[Dict[str, Dict[str, Any]]]) -> type_defs.CheckResult:
+def check_winnfssrv(params: Mapping, section: Optional[Dict[str, Dict[str, Any]]]) -> CheckResult:
     if params['State'] in ['ignored', section['State']]:
         yield Result(state=State.OK, summary=section['State'])
     else:
@@ -108,19 +111,17 @@ def check_winnfssrv(params: Mapping, section: Optional[Dict[str, Dict[str, Any]]
         name = 'EnableNFSV%d' % version
         param = params.get(name, 'ignored')
 
-        if param == 'ignored':
-            if section[name]:
+        match param, section[name]:
+            case 'ignored', True:
                 yield Result(state=State.OK, summary='NFSv%d' % version)
-        elif section[name] == param:
-            if section[name]:
+            case 'enabled', True:
                 yield Result(state=State.OK, summary='NFSv%d' % version)
-            else:
-                yield Result(state=State.OK, summary='No NFSv%d' % version)
-        else:
-            if section[name]:
-                yield Result(state=State.WARN, summary='Not expected NFSv%d' % version)
-            else:
+            case 'enabled', False:
                 yield Result(state=State.WARN, summary='Expected NFSv%d' % version)
+            case 'disabled', False:
+                yield Result(state=State.OK, summary='No NFSv%d' % version)
+            case 'disabled', True:
+                yield Result(state=State.WARN, summary='Not expected NFSv%d' % version)
 
     for protocol in [
             'MountProtocol',
@@ -132,6 +133,10 @@ def check_winnfssrv(params: Mapping, section: Optional[Dict[str, Dict[str, Any]]
             'MapServerProtocol']:
         if protocol not in params:
             continue
+
+        if params[protocol] == 'TCPUDP':
+            params[protocol] = 'TCP, UDP'
+
         if section[protocol] == params[protocol]:
             yield Result(state=State.OK, summary='%s: %s' % (protocol, section[protocol]))
         else:
@@ -141,7 +146,7 @@ def check_winnfssrv(params: Mapping, section: Optional[Dict[str, Dict[str, Any]]
     yield Metric('winnfssrv_client', section['Clients'])
 
 
-register.check_plugin(
+check_plugin_winnfssrv = CheckPlugin(
     name = 'winnfssrv',
     service_name = 'NFS Server',
     discovery_function = discover_winnfssrv,

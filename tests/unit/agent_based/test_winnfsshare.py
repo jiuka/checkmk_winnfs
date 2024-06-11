@@ -3,7 +3,7 @@
 #
 # winnfsshare - Windows NFS Share check
 #
-# Copyright (C) 2020-2021  Marius Rieder <marius.rieder@scs.ch>
+# Copyright (C) 2020-2024  Marius Rieder <marius.rieder@scs.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,12 +20,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import pytest
-from cmk.base.plugins.agent_based.agent_based_api.v1 import (
+from cmk.agent_based.v2 import (
     Result,
     Service,
     State,
 )
-from cmk.base.plugins.agent_based import winnfsshare
+from cmk_addons.plugins.winnfs.agent_based import winnfsshare
 
 EXAMPLE_STRING_TABLE = [
     ['Name', 'Online', 'Clustered', 'Authentication', 'AnonymousAccess', 'UnmappedUserAccess'],
@@ -122,34 +122,49 @@ def test_discover_winnfsshare(section, result):
     (
         'homes',
         {
-            'discovered': {'Authentication': ['Krb5p'], 'AnonymousAccess': 'True', 'UnmappedUserAccess': 'False'},
-            'AnonymousAccess': 'discoverd',
+            'discovered': {'Authentication': ['Krb5p'], 'AnonymousAccess': 'True', 'UnmappedUserAccess': 'True'},
+            'AnonymousAccess': 'discoverd', 'UnmappedUserAccess': 'discoverd',
         },
         [
             Result(state=State.OK, summary='Online'),
             Result(state=State.WARN, summary='Anonymous Access not allowed'),
+            Result(state=State.WARN, summary='Unmapped User not allowed'),
         ]
     ),
     (
         'homes',
         {
             'discovered': {'Authentication': ['Krb5p'], 'AnonymousAccess': 'True', 'UnmappedUserAccess': 'False'},
-            'AnonymousAccess': 'ignored',
-        },
-        [
-            Result(state=State.OK, summary='Online'),
-            Result(state=State.WARN, summary='Anonymous Access not allowed'),
-        ]
-    ),
-    (
-        'homes',
-        {
-            'discovered': {'Authentication': ['Krb5p'], 'AnonymousAccess': 'True', 'UnmappedUserAccess': 'False'},
-            'AnonymousAccess': 'False',
+            'AnonymousAccess': 'ignored', 'UnmappedUserAccess': 'ignored',
         },
         [
             Result(state=State.OK, summary='Online'),
             Result(state=State.OK, summary='Anonymous Access not allowed'),
+            Result(state=State.OK, summary='Unmapped User not allowed'),
+        ]
+    ),
+    (
+        'homes',
+        {
+            'discovered': {'Authentication': ['Krb5p'], 'AnonymousAccess': 'True', 'UnmappedUserAccess': 'False'},
+            'AnonymousAccess': 'forbidden', 'UnmappedUserAccess': 'forbidden',
+        },
+        [
+            Result(state=State.OK, summary='Online'),
+            Result(state=State.OK, summary='Anonymous Access not allowed'),
+            Result(state=State.OK, summary='Unmapped User not allowed'),
+        ]
+    ),
+    (
+        'homes',
+        {
+            'discovered': {'Authentication': ['Krb5p'], 'AnonymousAccess': 'True', 'UnmappedUserAccess': 'False'},
+            'AnonymousAccess': 'allowed', 'UnmappedUserAccess': 'allowed',
+        },
+        [
+            Result(state=State.OK, summary='Online'),
+            Result(state=State.WARN, summary='Anonymous Access not allowed'),
+            Result(state=State.WARN, summary='Unmapped User not allowed'),
         ]
     ),
 ])
