@@ -47,7 +47,7 @@ perfometer_winnfssrv = perfometers.Stacked(
     ),
     lower=perfometers.Perfometer(
         name='winnfssrv_session',
-        focus_range=perfometers.FocusRange(perfometers.Closed(0), perfometers.Open(10))),
+        focus_range=perfometers.FocusRange(perfometers.Closed(0), perfometers.Open(10)),
         segments=['winnfssrv_session'],
     )
 )
